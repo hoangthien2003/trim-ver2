@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input_field {
+    @apply outline-none w-[540px] font-[15px];
+  }
+  .input_border {
+    @apply border-[2px] border-gray_border 
+    pl-[18px] py-[12px] rounded-[5px] mt-[8px]
+    transition-colors hover:cursor-text flex items-center;
+  }
+  .input_label {
+    @apply text-[13px] text-gray_label font-medium;
+  }
+  .btn {
+    @apply text-center rounded-[5px] 
+    border-[1px] border-gray_border transition-opacity;
+  }
+  .btn_submit_form {
+    @apply w-full py-[12px] text-[18px];
+  }
+  .btn_purple {
+    @apply bg-purple_button text-white;
+  }
+  .btn_oauth {
+    @apply flex flex-row items-center justify-center
+    text-[14px] font-medium;
+  }
+  .btn_google {
+    @apply text-[14px] font-medium text-gray-700
+    border-[2px];
+  }
+}
