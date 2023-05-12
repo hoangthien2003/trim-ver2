@@ -13,6 +13,7 @@ module.exports = {
       danger_border: "#E44258",
       purple_button: "#5F48EA",
       gray: {
+        300: "#C1C2C3",
         700: "#5B5C60",
       },
       cyan: "#08C7E0",

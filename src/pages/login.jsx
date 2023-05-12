@@ -3,6 +3,7 @@ import CardLayout from "./card_layout";
 import GoogleIcon from "../assets/google.svg";
 import OpenEye from "../assets/open-eye.svg";
 import CloseEye from "../assets/close-eye.svg";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,8 @@ function LoginPage() {
   const [opacityBtnLogin, setOpacityBtnLogin] = useState("opacity-80");
   const [cursorBtnLogin, setCursorBtnLogin] = useState("cursor-not-allowed");
   const [toggleEye, setToggleEye] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Login || Trim";
@@ -30,19 +33,19 @@ function LoginPage() {
     e.preventDefault();
     if (!email) {
       setBorderEmail("border-danger_border");
+      setErrorEmail("Email required");
     }
     if (!password) {
       setBorderPassword("border-danger_border");
+      setErrorPassword("Password required");
     }
   };
 
   return (
     <CardLayout>
-      <h1 className="text-[34px] text-title_h1 font-bold select-none">
-        Welcome back
-      </h1>
+      <h1 className="card_title">Welcome back</h1>
       <form className="mt-[2.7em]" onSubmit={validateForm}>
-        <div className="mb-[1.5em]">
+        <div className="h-[7em]">
           <label htmlFor="email" className="input_label">
             Email address
           </label>
@@ -62,15 +65,16 @@ function LoginPage() {
               className="input_field"
               onFocus={() => {
                 setBorderEmail("border-black");
+                setErrorEmail(null);
               }}
               onBlur={() => {
                 setBorderEmail("");
               }}
             />
           </div>
-          <p>{errorEmail}</p>
+          <p className="text_error">{errorEmail}</p>
         </div>
-        <div>
+        <div className="h-[6em]">
           <label htmlFor="password" className="input_label">
             Password
           </label>
@@ -90,6 +94,7 @@ function LoginPage() {
               className="input_field"
               onFocus={() => {
                 setBorderPassword("border-black");
+                setErrorPassword(null);
               }}
               onBlur={() => {
                 setBorderPassword("");
@@ -106,7 +111,7 @@ function LoginPage() {
               />
             </div>
           </div>
-          <p>{errorPassword}</p>
+          <p className="text_error">{errorPassword}</p>
         </div>
         <p
           className="text-gray_label text-[13px] hover:cursor-pointer w-[135px]
@@ -115,7 +120,7 @@ function LoginPage() {
           Forgot your password ?
         </p>
         <button
-          type="submit"
+          type={`submit`}
           className={`btn btn_purple btn_submit_form
           mt-[1.5em] ${opacityBtnLogin} ${cursorBtnLogin}`}
         >
@@ -125,7 +130,7 @@ function LoginPage() {
       <div className="my-10 flex justify-center items-center w-full">
         <div className="h-[1px] bg-gray_border w-full"></div>
         <div className="px-2 absolute bg-white">
-          <p className="text-gray_label text-[14px] font-meidum mb-[2px]">or</p>
+          <p className="text-gray-300 text-[14px] font-medium mb-[2px]">or</p>
         </div>
       </div>
       <button className="btn btn_submit_form btn_oauth btn_google">
@@ -137,7 +142,10 @@ function LoginPage() {
       select-none"
       >
         <p className="mr-[10px] text-gray-700">Don't have an account?</p>
-        <p className="text-cyan font-medium cursor-pointer hover:underline">
+        <p
+          className="text-cyan font-medium cursor-pointer hover:underline"
+          onClick={() => navigate("/signup")}
+        >
           Sign up
         </p>
       </div>
