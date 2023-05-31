@@ -21,7 +21,7 @@
     transition-opacity;
   }
   .btn_submit_form {
-    @apply w-full py-[12px] text-[18px];
+    @apply w-full py-[12px] text-[17px];
   }
   .btn_purple {
     @apply bg-purple_button text-white;
@@ -39,5 +39,14 @@
   }
   .card_title {
     @apply text-[34px] text-title_h1 font-bold select-none;
+  }
+  .verify_code_border {
+    @apply w-[86px] h-[86px] border-gray_border
+    border-[1px] flex justify-center items-center
+    mr-[30px];
+  }
+  .verify_code_input {
+    @apply outline-none text-[44px] w-full
+    h-full text-center;
   }
 }

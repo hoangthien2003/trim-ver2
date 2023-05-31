@@ -2,31 +2,60 @@ import React, { useState, useEffect } from "react";
 import CardLayout from "./card_layout";
 import { useNavigate } from "react-router-dom";
 import GoogleIcon from "../assets/google.svg";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setEmailStore } from "../store/slices/mail";
 
-function SignupPage() {
-  const [opacityBtnLogin, setOpacityBtnLogin] = useState("opacity-80");
-  const [cursorBtnLogin, setCursorBtnLogin] = useState("cursor-not-allowed");
+function SignupMailPage() {
   const [borderEmail, setBorderEmail] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [email, setEmail] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     document.title = "Signup || Trim";
-    if (email) {
-      setOpacityBtnLogin("opacity-100");
-      setCursorBtnLogin("cursor-pointer");
-    } else {
-      setOpacityBtnLogin("opacity-80");
-      setCursorBtnLogin("cursor-not-allowed");
-    }
   }, [document]);
+
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      localStorage.setItem("token", tokenResponse.access_token);
+      navigate("/");
+    },
+    onError: (error) => console.log(error),
+  });
+
+  const checkEmail = async () => {
+    await axios
+      .post(`https://localhost:7005/Signup`, email, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        dispatch(setEmailStore(email));
+        navigate("/verify");
+      })
+      .catch((err) => {
+        console.log(err);
+        setBorderEmail("border-danger_border");
+        setErrorEmail("Email is existed!");
+      });
+  };
+
+  const validateForm = (e) => {
+    e.preventDefault();
+    if (email) {
+      checkEmail();
+    }
+  };
 
   return (
     <CardLayout>
-      <h1 className="card_title">Sign up</h1>
-      <form className="mt-[2.7em]">
+      <h1 className="card_title font-medium">Sign up</h1>
+      <form className="mt-[2.7em]" onSubmit={validateForm}>
         <div className="h-[7em]">
           <label htmlFor="email" className="input_label">
             Email address
@@ -51,6 +80,7 @@ function SignupPage() {
               }}
               onBlur={() => {
                 setBorderEmail("");
+                setErrorEmail(null);
               }}
             />
           </div>
@@ -59,7 +89,7 @@ function SignupPage() {
         <button
           type={`submit`}
           className={`btn btn_purple btn_submit_form 
-          ${opacityBtnLogin} ${cursorBtnLogin}`}
+          opacity-90 hover:opacity-100 transition-opacity`}
         >
           Continue
         </button>
@@ -70,7 +100,10 @@ function SignupPage() {
           <p className="text-gray-300 text-[14px] font-medium mb-[2px]">or</p>
         </div>
       </div>
-      <button className="btn btn_submit_form btn_oauth btn_google">
+      <button
+        className="btn btn_submit_form btn_oauth btn_google"
+        onClick={loginGoogle}
+      >
         <img src={GoogleIcon} alt="Google Icon" className="mr-[12px]" />
         Continue with Google
       </button>
@@ -90,4 +123,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default SignupMailPage;

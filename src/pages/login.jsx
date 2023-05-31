@@ -3,7 +3,14 @@ import CardLayout from "./card_layout";
 import GoogleIcon from "../assets/google.svg";
 import OpenEye from "../assets/open-eye.svg";
 import CloseEye from "../assets/close-eye.svg";
+import {
+  GoogleLogin,
+  useGoogleLogin,
+  useGoogleOneTapLogin,
+} from "@react-oauth/google";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "../utils/util";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,22 +36,59 @@ function LoginPage() {
     }
   });
 
-  const validateForm = (e) => {
+  useGoogleOneTapLogin({
+    onSuccess: (tokenResponse) => {
+      localStorage.setItem("token", JSON.stringify(tokenResponse));
+      navigate("/");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const submitForm = async (e) => {
     e.preventDefault();
-    if (!email) {
-      setBorderEmail("border-danger_border");
-      setErrorEmail("Email required");
+    if (EMAIL_PATTERN.test(email) && PASSWORD_PATTERN.test(password)) {
+      const data = {
+        email: email,
+        password: password,
+      };
+      await axios
+        .post(`${import.meta.env.VITE_API_URL}/Login`, data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          localStorage.setItem("token", res.data.token);
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-    if (!password) {
+    if (!EMAIL_PATTERN.test(email)) {
+      setBorderEmail("border-danger_border");
+      setErrorEmail("Invalid email!");
+    }
+    if (!PASSWORD_PATTERN.test(password)) {
       setBorderPassword("border-danger_border");
-      setErrorPassword("Password required");
+      setErrorPassword("Invalid password!");
     }
   };
+
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      localStorage.setItem("token", tokenResponse.access_token);
+      navigate("/");
+    },
+    onError: (error) => console.log(error),
+  });
 
   return (
     <CardLayout>
       <h1 className="card_title">Welcome back</h1>
-      <form className="mt-[2.7em]" onSubmit={validateForm}>
+      <form className="mt-[2.7em]" onSubmit={submitForm}>
         <div className="h-[7em]">
           <label htmlFor="email" className="input_label">
             Email address
@@ -74,7 +118,7 @@ function LoginPage() {
           </div>
           <p className="text_error">{errorEmail}</p>
         </div>
-        <div className="h-[6em]">
+        <div className="h-[6.5em]">
           <label htmlFor="password" className="input_label">
             Password
           </label>
@@ -133,7 +177,10 @@ function LoginPage() {
           <p className="text-gray-300 text-[14px] font-medium mb-[2px]">or</p>
         </div>
       </div>
-      <button className="btn btn_submit_form btn_oauth btn_google">
+      <button
+        className="btn btn_submit_form btn_oauth btn_google"
+        onClick={loginGoogle}
+      >
         <img src={GoogleIcon} alt="Google Icon" className="mr-[12px]" />
         Continue with Google
       </button>
